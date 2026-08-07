@@ -14,6 +14,12 @@ export function escapeHtml(value) {
   }[c]));
 }
 
+export function formatYear(year, lang) {
+  const m = String(year ?? '').match(/^(\d{4})\s*\/\s*(\d{4})$/);
+  if (lang === 'ar' && m) return `${m[2]}/${m[1]}`;
+  return year;
+}
+
 // Applique les textes statiques via data-i18n.
 export function applyStaticText(lang, translations) {
   document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
@@ -65,7 +71,7 @@ export function buildMobilePreviewHTML(data, form, lang, translations) {
   let html = `
     <div class="mobile-card-header">
       <div style="font-weight:700; font-size:16px; margin-bottom:8px;">📋 ${escapeHtml(form.school)}</div>
-      <div style="font-size:22px; font-weight:900; color:var(--gold);"><bdi>${escapeHtml(form.year)}</bdi></div>
+      <div style="font-size:22px; font-weight:900; color:var(--gold);"><bdi>${escapeHtml(formatYear(form.year, lang))}</bdi></div>
       <div style="font-size:10px; color:var(--muted); text-transform:uppercase; margin-bottom:12px;">${escapeHtml(form.period)}</div>
       <div class="m-grid">
         <div class="m-info-box"><span>${translations.student}</span><strong>${escapeHtml(form.student)}</strong></div>
@@ -127,15 +133,15 @@ export function buildA4SheetHTML(data, form, lang, translations) {
           <span style="font-size:10px;">${translations.sheetTitle}</span>
         </div>
         <div style="text-align:right;">
-          <div style="font-weight:bold;"><bdi>${escapeHtml(form.year)}</bdi></div>
+          <div style="font-weight:bold;"><bdi>${escapeHtml(formatYear(form.year, lang))}</bdi></div>
           <div style="font-size:10px;">${escapeHtml(form.period)}</div>
         </div>
       </div>
       <div class="a4-student-bar">
-        <div class="a4-info"><span>${translations.student}:</span> <strong>${escapeHtml(form.student)}</strong></div>
-        <div class="a4-info"><span>${translations.class}:</span> <strong>${escapeHtml(form.klass)}</strong></div>
-        <div class="a4-info"><span>${translations.rank}:</span> <strong>${escapeHtml(form.rank)}</strong></div>
-        <div class="a4-info"><span>${translations.avgGeneral}:</span> <strong dir="ltr">${formatGrade(generalAvg)} / 10</strong></div>
+        <div class="a4-info"><span>${translations.student}:&rlm;</span> <strong>${escapeHtml(form.student)}</strong></div>
+        <div class="a4-info"><span>${translations.class}:&rlm;</span> <strong>${escapeHtml(form.klass)}</strong></div>
+        <div class="a4-info"><span>${translations.rank}:&rlm;</span> <strong>${escapeHtml(form.rank)}</strong></div>
+        <div class="a4-info"><span>${translations.avgGeneral}:&rlm;</span> <strong dir="ltr">${formatGrade(generalAvg)} / 10</strong></div>
       </div>
       <table class="a4-table">
         <thead>
@@ -149,12 +155,12 @@ export function buildA4SheetHTML(data, form, lang, translations) {
     </div>
     <div>
       <div class="a4-summary">
-        <div class="a4-info"><span>${translations.remark}:</span> <strong>${escapeHtml(form.remark)}</strong></div>
-        <div class="a4-info"><span>${translations.avgGeneral}:</span>
+        <div class="a4-info"><span>${translations.remark}:&rlm;</span> <strong>${escapeHtml(form.remark)}</strong></div>
+        <div class="a4-info"><span>${translations.avgGeneral}:&rlm;</span>
           <strong dir="ltr" style="font-size:14px;">${formatGrade(generalAvg)} / 10</strong></div>
       </div>
       <div class="a4-footer">
-        <div class="a4-info"><span>${translations.director}:</span> <strong>${escapeHtml(form.director)}</strong></div>
+        <div class="a4-info"><span>${translations.director}:&rlm;</span> <strong>${escapeHtml(form.director)}</strong></div>
         <div>${translations.stamp}</div>
       </div>
     </div>`;
