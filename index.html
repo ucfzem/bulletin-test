@@ -249,17 +249,25 @@ const translationDict = {
 
 
 // ============================================
-// FONCTION DE TRADUCTION INTELLIGENTE
+// DICTIONNAIRE INVERSE (Français → Arabe)
 // ============================================
-function translateValue(value) {
+const reverseDict = {};
+Object.entries(translationDict).forEach(([ar, fr]) => {
+  reverseDict[fr.trim()] = ar;
+});
+
+
+// ============================================
+// FONCTION DE TRADUCTION INTELLIGENTE (BIDIRECTIONNELLE)
+// ============================================
+function translateValue(value, targetLang) {
   if (!value) return value;
   const trimmed = value.trim();
   // Si la valeur existe dans le dictionnaire, on la traduit
-  if (translationDict[trimmed]) {
-    return translationDict[trimmed];
+  if (targetLang === 'ar') {
+    return reverseDict[trimmed] || trimmed;
   }
-  // Sinon, on tente une translittération basique (fallback)
-  return trimmed;
+  return translationDict[trimmed] || trimmed;
 }
 
 
@@ -269,6 +277,7 @@ function translateValue(value) {
 function addTranslation(arText, frText) {
   if (arText && frText && arText.trim() !== '' && frText.trim() !== '') {
     translationDict[arText.trim()] = frText.trim();
+    reverseDict[frText.trim()] = arText.trim();
   }
 }
 
@@ -412,32 +421,19 @@ function applyTranslations(lang) {
   document.getElementById('btnAr').classList.toggle('active', lang === 'ar');
 
 
-  // ===== TRADUCTION DES VALEURS DES CHAMPS =====
-  if (lang === 'fr') {
-    const schoolInput = document.getElementById('inputSchool');
-    const studentInput = document.getElementById('inputStudent');
-    const directorInput = document.getElementById('inputDirector');
+  // ===== TRADUCTION DES VALEURS DES CHAMPS (BIDIRECTIONNELLE) =====
+  const arFields = [
+    { el: document.getElementById('inputSchool'), cls: 'ar' },
+    { el: document.getElementById('inputStudent'), cls: 'ar' },
+    { el: document.getElementById('inputDirector'), cls: 'ar' }
+  ];
 
-
-    if (schoolInput) {
-      const translated = translateValue(schoolInput.value);
-      if (translated !== schoolInput.value) {
-        schoolInput.value = translated;
-      }
-    }
-    if (studentInput) {
-      const translated = translateValue(studentInput.value);
-      if (translated !== studentInput.value) {
-        studentInput.value = translated;
-      }
-    }
-    if (directorInput) {
-      const translated = translateValue(directorInput.value);
-      if (translated !== directorInput.value) {
-        directorInput.value = translated;
-      }
-    }
-  }
+  arFields.forEach(({ el }) => {
+    if (!el) return;
+    const translated = translateValue(el.value, lang);
+    if (translated !== el.value) el.value = translated;
+    el.classList.toggle('ar', isRTL);
+  });
 
 
   rebuildUnitsForm(lang);
