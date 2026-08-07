@@ -207,3 +207,39 @@ bulletin-test/
   valeur@699.9 (encore plus à gauche) → **colon après libellé (RTL) : OUI**.
 - `npm test` → 8/8 OK ; `npm run test:e2e` → TOUT OK (16 assertions).
 - Déploiement auto : GitHub Pages + Vercel.
+
+---
+
+## Session (suite) : nettoyage + durcissement (commit `56fdcdc`)
+
+### Correctifs
+1. **Nom de fichier PDF personnalisé** (`src/app.js`) : l'export produisait
+   toujours `Bulletin.pdf` (risque d'écrasement pour un directeur exportant
+   plusieurs bulletins). Désormais `Bulletin_{nom élève}.pdf`, avec nom assaini
+   (`/[\p{L}\p{N}._-]/` pour les fichiers) et fallback `bulletin` si vide.
+2. **Clamp des notes et coefficients** (`src/store.js`) : `getGrade`/`getCoeff`
+   bornent désormais la valeur lue par le calcul de moyenne et le PDF :
+   - note → `[0, 10]` (un `25` tapé devient `10`, un `-3` devient `0`, un
+     `8.5.2` → `8.5` via `parseFloat`, un texte `abc` → `null`/fallback) ;
+   - coefficient → `[0, 10]`.
+   - Test unitaire ajouté (`test/calc.test.js` : `getGrade/getCoeff : clamp
+     hors bornes`).
+3. **Code mort nettoyé** (`src/app.js`) : la condition `e.target.id?.slice(1)`
+   dans `wireEvents()` ne matchait jamais les champs `inputSchool`,
+   `inputStudent`, etc. (elle coupait seulement le 1er caractère). Remplacée
+   par un sélecteur clair `#form-view input, #form-view textarea` ;
+   la constante inutilisée `FORM_FIELDS` a été supprimée.
+4. **Passage à 3 trimestres** (`src/i18n.js` + `index.html`) : le Maroc
+   (primaire/collège, écoles coraniques, crèches, soutien scolaire) fonctionne
+   en **3 trimestres** et non 2 semestres.
+   - FR : `SEMESTRE 1/2` → `TRIMESTRE 1/2/3`
+   - AR : `الدورة 1/2` → `الدورة 1/2/3`
+   - Les options de repli statiques du HTML ont été mises à jour aussi.
+   - La liste reste un tableau i18n : un établissement privé en semestres peut
+     repasser dessus sans toucher au code.
+
+### Validation
+- `npm test` → 9/9 OK (nouveau test de clamp inclus) ;
+  `npm run test:e2e` → TOUT OK (16 assertions).
+- Vérification ciblée : `getGrade('25')→10`, `getGrade('-3')→0`,
+  `getGrade('8.5.2')→8.5`, `getCoeff('99')→10`, `getCoeff('-1')→0`.
