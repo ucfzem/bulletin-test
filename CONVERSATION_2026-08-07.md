@@ -178,3 +178,32 @@ bulletin-test/
 - Range API : la position de « 2026 » est à gauche de « 2027 » en mode AR
   (mobile : x=795 < x=871 ; A4 : x=49.8 < x=93.8) → ordre LTR confirmé.
 - `npm test` → 8/8 OK ; `npm run test:e2e` → TOUT OK.
+
+---
+
+## Session (suite) : année scolaire 2027/2026 en AR + deux-points verrouillé par &rlm;
+
+### Constat
+- L'année « 2026 / 2027 » devait s'afficher **inversée en arabe** : `2027 / 2026`.
+- Le correctif précédent posait `dir="ltr"` sur les `.a4-info` pour forcer le
+  deux-points après le libellé, mais en LTR le navigateur traite `:` comme
+  caractère neutre et le bascule à l'extrême droite du mot arabe (`:التلميذ`).
+
+### Correctif — commit `753cb88`
+1. **`src/render.js`** : nouvelle fonction exportée `formatYear(year, lang)` qui
+   inverse `2026/2027` → `2027/2026` uniquement en arabe (regex `^\d{4}/\d{4}$`).
+   Appliquée dans `buildMobilePreviewHTML` et `buildA4SheetHTML` (dans `<bdi>`).
+2. **Deux-points** : `dir="ltr"` **retiré** des conteneurs `.a4-info` ; le marqueur
+   **`&rlm;`** (U+200F, Right-to-Left Mark) est ajouté **après chaque deux-points**
+   des libellés A4 (student, class, rank, avgGeneral, remark, director). Le
+   deux-points reste ainsi collé à la gauche du mot arabe, dans le flux RTL global.
+   La règle : ne pas mettre `dir="ltr"` sur les libellés arabes ; isoler la
+   ponctuation neutre (`:`, `/`, `-`) via `&rlm;` ou des `<span>` séparés.
+
+### Vérification automatique (Playwright, Range API)
+- `year: 2027/2026` (A4 + mobile) — confirmé.
+- Libellé `التلميذ:‏` : labelStart@739.9 (droite), dernière lettre@711.9,
+  deux-points@709.9 (juste à gauche du mot → après le libellé en RTL),
+  valeur@699.9 (encore plus à gauche) → **colon après libellé (RTL) : OUI**.
+- `npm test` → 8/8 OK ; `npm run test:e2e` → TOUT OK (16 assertions).
+- Déploiement auto : GitHub Pages + Vercel.
