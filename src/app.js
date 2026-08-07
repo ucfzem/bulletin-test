@@ -174,10 +174,20 @@ function exportPDF() {
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
 
+  // Rendre le conteneur visible pendant la capture (html2canvas ne capture
+  // pas fiabiliment un élément opacity:0), puis le remasquer après.
+  const parent = $('a4-render-container');
+  parent.style.opacity = '1';
+  parent.style.zIndex = '9999';
+
   window.html2pdf().set(opt).from(els.a4Sheet).save()
     .then(() => { btn.textContent = original; })
     .catch(() => { btn.textContent = original; })
-    .finally(() => { btn.disabled = false; });
+    .finally(() => {
+      parent.style.opacity = '0';
+      parent.style.zIndex = '-9999';
+      btn.disabled = false;
+    });
 }
 
 // ---------- Initialisation ----------

@@ -134,13 +134,15 @@
   }
   .a4-page {
     width: 210mm; height: 296mm; background: #fff; color: #14171f; padding: 10mm;
-    font-family: 'Inter', sans-serif; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;
+    font-family: 'Tajawal', 'Inter', sans-serif; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;
   }
   .a4-header { background: #10493f; color: #fff; padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; }
   .a4-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; background: rgba(255,255,255,0.1); padding: 6px; border-radius: 6px; font-size: 9px; }
-  .a4-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10px; }
-  .a4-table th, .a4-table td { border-bottom: 1px solid #e5e0d5; padding: 4px; text-align: left; }
+  .a4-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; }
+  .a4-table th, .a4-table td { border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center; }
+  .a4-table th { background-color: #10493f; color: #fff; font-weight: bold; }
   .a4-table td.num { text-align: right; font-weight: bold; }
+  .a4-unit-header td { background-color: #e2e8f0; font-weight: bold; text-align: left; }
   .a4-summary { display: flex; justify-content: space-between; background: #f4f1ea; padding: 10px; border-radius: 8px; margin-top: 8px; font-size: 11px; }
 
   @media print {

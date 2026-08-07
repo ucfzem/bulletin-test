@@ -108,7 +108,7 @@ export function buildA4SheetHTML(data, form, lang, translations) {
   const tableRows = [];
   units.forEach((u) => {
     tableRows.push(
-      `<tr style="background:#f4f1ea; font-weight:bold;"><td colspan="3">${escapeHtml(u.name)}</td>` +
+      `<tr class="a4-unit-header"><td colspan="3">${escapeHtml(u.name)}</td>` +
       `<td class="num">${formatGrade(u.avg)}</td></tr>`);
     u.subjects.forEach((s) => {
       const total = s.grade !== null ? (s.grade * s.coeff).toFixed(2) : '—';
@@ -139,7 +139,7 @@ export function buildA4SheetHTML(data, form, lang, translations) {
       </div>
       <table class="a4-table">
         <thead>
-          <tr style="background:#10493f; color:#fff;">
+          <tr>
             <th>${translations.tableSubject}</th><th>${translations.coeff}</th>
             <th>${translations.tableNote}</th><th style="text-align:right;">${translations.tableTotal}</th>
           </tr>
