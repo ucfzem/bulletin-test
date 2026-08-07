@@ -135,3 +135,28 @@ bulletin-test/
 
 ### Validation
 - `npm test` → 8/8 OK ; `npm run test:e2e` → TOUT OK.
+
+---
+
+## Session (suite) : bidirectionnalité RTL/LTR du bulletin A4 (année inversée, `|`, deux-points)
+
+### Anomalies d'origine (retour utilisateur)
+- Année affichée inversée (`20272026 /` au lieu de `2026 / 2027`) et moyenne
+  ` / 10 7.72` : mélange chiffres + slash + arabe en contexte RTL.
+- Deux-points du mauvais côté (`:التلميذ`) : libellé et valeur concaténés en
+  simple texte au lieu de balises distinctes.
+- Mots collés (`السنة6`, `جادومجتهد`) : espaces perdus.
+
+### Correctifs — commit `f40d974`
+1. **`src/render.js`** (`buildA4SheetHTML`) :
+   - Année dans `<bdi>` (isolation bidi) → `2026 / 2027` s'affiche dans le bon sens.
+   - Moyennes dans `<strong dir="ltr">` → `8.72 / 10` sans inversion du slash.
+   - Structure `span` (libellé:) + `strong` (valeur) séparés pour un deux-points correct.
+   - Nouvelles classes `.a4-student-bar`, `.a4-info`, `.a4-footer`.
+2. **`index.html`** : CSS `.a4-student-bar` / `.a4-info` (couleurs + espacement)
+   et règle `bdi, [dir="ltr"] { unicode-bidi: isolate; }`.
+3. **`src/app.js`** : `dir="rtl|"ltr"` appliqué sur `#a4-sheet` selon la langue
+   (le contenu A4 n'hérite plus du `dir` global de façon ambiguë).
+
+### Validation
+- `npm test` → 8/8 OK ; `npm run test:e2e` → TOUT OK.
