@@ -43,6 +43,7 @@ await page.goto(baseURL, { waitUntil: 'networkidle' });
 // Vérifie l'état FR initial.
 assert((await page.inputValue('#inputSchool')) === 'École Ibn Sina', 'FR: école traduite → École Ibn Sina');
 assert((await page.inputValue('#f-rank')) === '2ᵉ de la classe', 'FR: rang en français');
+assert((await page.inputValue('#inputTeachers')) === 'Al-Morabit · Al-Fassi', 'FR: professeurs traduits → Al-Morabit · Al-Fassi');
 
 // Clique le bouton arabe.
 await page.click('[data-lang="ar"]');
@@ -50,6 +51,7 @@ await page.waitForTimeout(200);
 
 assert((await page.inputValue('#f-rank')) === 'الثاني في القسم', 'AR: rang traduit → الثاني في القسم');
 assert((await page.inputValue('#f-remark')) === 'تلميذ جاد ومجتهد', 'AR: remarque traduite → تلميذ جاد ومجتهد');
+assert((await page.inputValue('#inputTeachers')) === 'المرابط · الفاسي', 'AR: professeurs → المرابط · الفاسي');
 assert((await page.$eval('html', (el) => el.getAttribute('dir'))) === 'rtl', 'AR: dir=rtl');
 
 // Retour FR, tout revient.
@@ -72,6 +74,8 @@ await page.click('#btnPreview');
 await page.waitForTimeout(200);
 assert(await page.isVisible('#mobile-card-render'), 'Aperçu mobile affiché');
 const previewText = await page.textContent('#mobile-card-render');
+assert(previewText.includes('Al-Morabit · Al-Fassi'), 'Aperçu: professeurs affichés');
+assert(previewText.includes('22 '), 'Aperçu: effectif (22) affiché');
 await page.click('#btnEdit');
 await page.waitForTimeout(100);
 assert(await page.isVisible('#form-view'), 'Retour au formulaire (Éditer)');

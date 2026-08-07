@@ -64,13 +64,14 @@ export function buildMobilePreviewHTML(data, form, lang, translations) {
 
   let html = `
     <div class="mobile-card-header">
-      <div class="m-header-top">
-        <strong style="color:var(--gold);">${escapeHtml(form.school)}</strong>
-        <span>${escapeHtml(form.period)}</span>
-      </div>
+      <div style="font-weight:700; font-size:16px; margin-bottom:8px;">📋 ${escapeHtml(form.school)}</div>
+      <div style="font-size:22px; font-weight:900; color:var(--gold);">${escapeHtml(form.year)}</div>
+      <div style="font-size:10px; color:var(--muted); text-transform:uppercase; margin-bottom:12px;">${escapeHtml(form.period)}</div>
       <div class="m-grid">
         <div class="m-info-box"><span>${translations.student}</span><strong>${escapeHtml(form.student)}</strong></div>
-        <div class="m-info-box"><span>${translations.class}</span><strong>${escapeHtml(form.klass)}</strong></div>
+        <div class="m-info-box"><span>${translations.regNumber}</span><strong>${escapeHtml(form.regNum)}</strong></div>
+        <div class="m-info-box"><span>${translations.class} · ${translations.classCount}</span><strong>${escapeHtml(form.klass)} — ${escapeHtml(form.count)} ${translations.pupils}</strong></div>
+        <div class="m-info-box"><span>${translations.teachers}</span><strong>${escapeHtml(form.teachers)}</strong></div>
       </div>
       <div class="m-avg-box">
         <span>${translations.avgGeneral}</span>

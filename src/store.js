@@ -46,7 +46,10 @@ export const store = createStore({
     student: '',
     director: '',
     rank: '',
-    remark: ''
+    remark: '',
+    regNum: '',
+    count: '',
+    teachers: ''
   }
 });
 

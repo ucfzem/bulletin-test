@@ -39,7 +39,10 @@ const els = {
   inputStudent: $('inputStudent'),
   inputDirector: $('inputDirector'),
   inputRank: $('f-rank'),
-  inputRemark: $('f-remark')
+  inputRemark: $('f-remark'),
+  inputNum: $('f-num'),
+  inputCount: $('inputCount'),
+  inputTeachers: $('inputTeachers')
 };
 
 let lastTrigger = null;
@@ -66,7 +69,7 @@ function applyLanguage(lang) {
   semSel.innerHTML = buildSelectOptions(t.semesters, semSel.value);
 
   // Traduction des valeurs saisies (bidirectionnelle)
-  [els.inputSchool, els.inputStudent, els.inputDirector, els.inputRank, els.inputRemark].forEach((el) => {
+  [els.inputSchool, els.inputStudent, els.inputDirector, els.inputRank, els.inputRemark, els.inputTeachers].forEach((el) => {
     if (!el) return;
     const translated = translateValue(el.value, lang);
     if (translated !== el.value) el.value = translated;
@@ -96,7 +99,7 @@ function switchLang(lang) {
 
 // ---------- Formulaire / Store ----------
 
-const FORM_FIELDS = ['school', 'student', 'director', 'rank', 'remark'];
+const FORM_FIELDS = ['school', 'student', 'director', 'rank', 'remark', 'count', 'teachers'];
 
 function syncFormFields() {
   const form = state().form;
@@ -105,6 +108,9 @@ function syncFormFields() {
   els.inputDirector && (form.director = els.inputDirector.value);
   els.inputRank && (form.rank = els.inputRank.value);
   els.inputRemark && (form.remark = els.inputRemark.value);
+  els.inputNum && (form.regNum = els.inputNum.value);
+  els.inputCount && (form.count = els.inputCount.value);
+  els.inputTeachers && (form.teachers = els.inputTeachers.value);
 }
 
 function collectForm() {
@@ -164,7 +170,7 @@ function exportPDF() {
     margin: 0,
     filename: 'Bulletin.pdf',
     image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
+    html2canvas: { scale: 2, useCORS: true, logging: false },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
 

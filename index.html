@@ -128,7 +128,10 @@
   .m-subj-bar { height: 4px; background: var(--surface); border-radius: 2px; width: 100%; margin-top: 2px; overflow: hidden; }
   .m-subj-fill { height: 100%; background: var(--gold); }
 
-  #a4-render-container { position: absolute; left: -9999px; top: -9999px; width: 210mm; }
+  #a4-render-container {
+    position: fixed; left: 0; top: 0; z-index: -9999;
+    opacity: 0; pointer-events: none; width: 210mm;
+  }
   .a4-page {
     width: 210mm; height: 296mm; background: #fff; color: #14171f; padding: 10mm;
     font-family: 'Inter', sans-serif; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;
@@ -141,12 +144,24 @@
   .a4-summary { display: flex; justify-content: space-between; background: #f4f1ea; padding: 10px; border-radius: 8px; margin-top: 8px; font-size: 11px; }
 
   @media print {
-    html, body { height: auto !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; }
-    body > *:last-child { margin-bottom: 0 !important; padding-bottom: 0 !important; }
+    html, body {
+      height: auto !important; min-height: 0 !important; margin: 0 !important;
+      padding: 0 !important; background: #fff !important;
+    }
     body * { visibility: hidden; }
     #a4-render-container, #a4-render-container * { visibility: visible; }
-    #a4-render-container { position: absolute; left: 0; top: 0; width: 100%; height: auto !important; max-height: 100% !important; page-break-after: avoid !important; break-after: avoid !important; }
-    .a4-page { width: 100% !important; height: 100% !important; max-height: 100vh !important; padding: 12mm !important; margin: 0 !important; page-break-after: avoid !important; break-after: avoid !important; box-sizing: border-box !important; overflow: hidden !important; }
+    #a4-render-container {
+      position: static !important; /* flux naturel → pagination multi-pages correcte */
+      width: 100% !important; margin: 0 !important; padding: 0 !important;
+      left: auto !important; top: auto !important;
+    }
+    .a4-page {
+      width: 100% !important; height: 297mm !important; min-height: 0 !important;
+      padding: 10mm !important; margin: 0 !important; box-sizing: border-box !important;
+      page-break-after: always; break-after: page;
+      page-break-inside: avoid; break-inside: avoid;
+    }
+    .a4-page:last-child { page-break-after: auto; break-after: auto; }
     .a4-page * { margin: 0 !important; padding: 0 !important; }
     .a4-page .a4-header { padding: 8px 10px !important; margin-bottom: 6px !important; }
     .a4-page .a4-grid { padding: 4px 6px !important; margin-bottom: 6px !important; }
@@ -205,6 +220,14 @@
         <div class="field">
           <label id="lblNum" for="f-num" data-i18n="regNumber">N° Inscription</label>
           <input id="f-num" value="45 / 12">
+        </div>
+        <div class="field">
+          <label id="lblCount" for="inputCount" data-i18n="classCount">Effectif</label>
+          <input type="number" id="inputCount" value="22" min="1" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label id="lblTeachers" for="inputTeachers" data-i18n="teachers">Professeurs</label>
+          <input class="ar" id="inputTeachers" value="المرابط · الفاسي">
         </div>
         <div class="field">
           <label id="lblPeriod" for="semester-select" data-i18n="semester">Période</label>

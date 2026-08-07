@@ -15,6 +15,8 @@ const dict = {
   // Directeurs
   "عبد الله الناصري": "Abdellah An-Naciri",
   "محمد محي الدين": "Mohammed Mouhi Ad-Dine",
+  // Professeurs
+  "المرابط · الفاسي": "Al-Morabit · Al-Fassi",
   // Rang / Remarque
   "الثاني في القسم": "2ᵉ de la classe",
   "تلميذ جاد ومجتهد": "Élève sérieux et travailleur"
