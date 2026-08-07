@@ -112,3 +112,26 @@ bulletin-test/
 - `npm run test:e2e` → TOUT OK (16 assertions, dont professeurs traduits FR/AR,
   effectif 22 affiché dans l'aperçu, aucune erreur console).
 - Déploiement auto : GitHub Pages + Vercel.
+
+---
+
+## Session (suite) : export PDF A4 illisible (texte brut, `|`, sans mise en page)
+
+### Diagnostic
+- Le PDF généré par html2pdf.js sortait en texte brut décalé, symboles `|` isolés,
+  sans bordures ni couleurs → capture HTML/CSS ratée par html2canvas.
+
+### Correctifs — commit `08c8fff`
+1. **Capture du conteneur** (`src/app.js`) : `#a4-render-container` reste masqué
+   (`position:fixed; opacity:0; z-index:-9999; pointer-events:none`), mais `exportPDF`
+   le rend visible (`opacity:1; z-index:9999`) pendant la capture puis le remasque
+   dans `finally()`. → html2canvas rend le layout complet.
+2. **Tableau A4** (`index.html`) : `.a4-table th,td` avec bordures complètes
+   `1px solid #cbd5e1`, `text-align:center`, en-têtes `th` en `#10493f`,
+   nouvelle classe `.a4-unit-header` (fond `#e2e8f0`).
+3. **`render.js`** : en-tête d'unité via la classe `.a4-unit-header` (fini le style
+   inline), suppression du style inline de la ligne `thead`.
+4. Police A4 : `font-family: 'Tajawal', 'Inter', sans-serif` (arabe correct).
+
+### Validation
+- `npm test` → 8/8 OK ; `npm run test:e2e` → TOUT OK.
