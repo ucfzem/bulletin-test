@@ -65,7 +65,7 @@ export function buildMobilePreviewHTML(data, form, lang, translations) {
   let html = `
     <div class="mobile-card-header">
       <div style="font-weight:700; font-size:16px; margin-bottom:8px;">📋 ${escapeHtml(form.school)}</div>
-      <div style="font-size:22px; font-weight:900; color:var(--gold);">${escapeHtml(form.year)}</div>
+      <div style="font-size:22px; font-weight:900; color:var(--gold);"><bdi>${escapeHtml(form.year)}</bdi></div>
       <div style="font-size:10px; color:var(--muted); text-transform:uppercase; margin-bottom:12px;">${escapeHtml(form.period)}</div>
       <div class="m-grid">
         <div class="m-info-box"><span>${translations.student}</span><strong>${escapeHtml(form.student)}</strong></div>
@@ -75,7 +75,7 @@ export function buildMobilePreviewHTML(data, form, lang, translations) {
       </div>
       <div class="m-avg-box">
         <span>${translations.avgGeneral}</span>
-        <strong>${formatGrade(generalAvg)} / 10</strong>
+        <strong dir="ltr">${formatGrade(generalAvg)} / 10</strong>
       </div>
     </div>`;
 
