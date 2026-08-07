@@ -78,3 +78,37 @@ bulletin-test/
 - GitHub (repo) : https://github.com/ucfzem/bulletin-test
 - GitHub Pages : https://ucfzem.github.io/bulletin-test/
 - Vercel : https://bulletin-test.vercel.app/
+
+---
+
+## Session (suite) : champs Effectif & Professeurs + corrections rendu/impression/PDF
+
+### Anomalies corrigées (retour utilisateur)
+1. **Champs manquants** : l'aperçu mobile affichait l'effectif (22) et les professeurs
+   (المرابط · الفاسي) sans champs de saisie correspondants.
+   - Ajout de `#inputCount` (Effectif, nombre, défaut 22) et `#inputTeachers`
+     (Professeurs, AR) dans le bloc Informations Générales.
+2. **En-tête mobile** (`render.js` → `buildMobilePreviewHTML`) : nouvelle structure
+   📋 école → année (gold) → période → 4 boîtes info
+   (Élève, N° Inscription, Classe · Effectif, Professeurs) → Moyenne générale.
+3. **Impression A4** : le conteneur `position:absolute` coupait/chevauchetait le
+   bulletin multi-pages. Remplacé par `position:static` + `page-break-inside:avoid`
+   et `page-break-after:always` pour une pagination naturelle.
+4. **Export PDF html2pdf** : `html2canvas` amélioré (`useCORS:true`, `logging:false`) ;
+   conteneur A4 passé de `left:-9999px` à `position:fixed; opacity:0; z-index:-9999;
+   pointer-events:none` (capture fiable sur mobile).
+
+### Autres points vérifiés (déjà conformes)
+- `for`/`id` cohérents sur tous les champs (dont `semester-select`).
+- Bascule Form ⇄ Preview gérée par `showPreview`/`showForm` (attribut `hidden`).
+- Direction RTL/LTR basculée via `applyLanguage` (`document.documentElement.dir`).
+
+### Fichiers modifiés
+- `index.html`, `src/i18n.js`, `src/values.js`, `src/store.js`, `src/app.js`,
+  `src/render.js`, `test/e2e.mjs` — commit `4e1fe4b`.
+
+### Validation
+- `npm test` → 8 tests unitaires OK.
+- `npm run test:e2e` → TOUT OK (16 assertions, dont professeurs traduits FR/AR,
+  effectif 22 affiché dans l'aperçu, aucune erreur console).
+- Déploiement auto : GitHub Pages + Vercel.
