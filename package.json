@@ -1,0 +1,15 @@
+{
+  "name": "bulletin-test",
+  "version": "2.0.0",
+  "type": "module",
+  "description": "Générateur de bulletin scolaire mobile FR/AR — version modularisée (ESM)",
+  "private": true,
+  "scripts": {
+    "test": "node --test test/calc.test.js",
+    "test:e2e": "node test/e2e.mjs",
+    "serve": "python3 -m http.server 8080"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.1"
+  }
+}

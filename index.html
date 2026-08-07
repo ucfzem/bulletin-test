@@ -2,27 +2,48 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Générateur de bulletin scolaire mobile FR/AR — UCF ZEM">
 <title>Générateur de Bulletin — UCF ZEM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" crossorigin="anonymous" defer></script>
 <style>
   :root {
     --bg: #12181b; --paper: #1a232a; --surface: #24303a;
     --ink: #f0f4f8; --muted: #8b9bb0; --line: #2d3d4c;
     --gold: #d4a84a; --gold-light: #f3e5ab; --emerald: #10b981;
     --emerald-dark: #064e3b; --accent: #ef4444; --radius: 14px;
+    --focus-ring: 0 0 0 3px rgba(16, 185, 129, 0.5);
   }
 
-
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
   body {
     margin: 0; font-family: 'Inter', sans-serif; color: var(--ink);
     background: var(--bg); padding: 12px 10px 80px; min-height: 100vh;
   }
+
   .wrap { max-width: 600px; margin: 0 auto; }
 
+  /* Accessibilité : focus visible & saut de navigation */
+  .skip-link {
+    position: absolute; top: -40px; left: 8px; z-index: 100;
+    background: var(--emerald); color: #fff; padding: 8px 12px;
+    border-radius: 6px; text-decoration: none; font-size: 12px;
+  }
+  .skip-link:focus { top: 8px; }
+
+  :focus-visible {
+    outline: 2px solid var(--emerald);
+    outline-offset: 2px;
+    box-shadow: var(--focus-ring);
+  }
+
+  button:focus:not(:focus-visible) { outline: none; }
+
+  [hidden] { display: none !important; }
 
   .topbar { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
   .header-info h1 { font-family: 'Space Grotesk', sans-serif; font-size: 18px; margin: 0; color: #fff; }
@@ -33,14 +54,19 @@
     border: none; border-radius: 10px; padding: 10px 8px; font-family: 'Space Grotesk', sans-serif;
     font-weight: 600; font-size: 12px; cursor: pointer; display: flex; align-items: center;
     justify-content: center; gap: 4px; text-align: center; color: #fff;
+    transition: transform 0.1s ease, opacity 0.15s ease;
   }
   .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.55; cursor: wait; }
   .btn-primary { background: var(--emerald); }
   .btn-ghost { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
   .btn-gold { background: var(--gold); color: #000; }
   .btn-lang { background: var(--surface); border: 1px solid var(--line); padding: 6px; }
   .btn-lang.active { background: var(--emerald); border-color: var(--emerald); }
 
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
 
   .card {
     background: var(--paper); border-radius: var(--radius); border: 1px solid var(--line);
@@ -51,7 +77,6 @@
     margin: 0 0 12px; display: flex; align-items: center; justify-content: space-between;
   }
 
-
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .grid-full { grid-column: 1 / -1; }
   .field { display: flex; flex-direction: column; gap: 4px; }
@@ -61,8 +86,8 @@
     font-size: 13px; font-family: 'Inter', sans-serif; background: var(--surface); color: var(--ink); width: 100%;
   }
   .field input.ar { font-family: 'Tajawal', sans-serif; direction: rtl; }
+  .field textarea.ar { font-family: 'Tajawal', sans-serif; direction: rtl; }
   .field select option { background: var(--surface); color: var(--ink); }
-
 
   .unit-title {
     background: var(--surface); font-size: 11px; font-weight: 700; color: var(--emerald);
@@ -79,8 +104,6 @@
   }
   .subj-item input::placeholder { color: var(--muted); font-size: 10px; }
 
-
-  #preview-mobile { display: none; }
   .mobile-card-header {
     background: linear-gradient(135deg, var(--emerald-dark), var(--paper));
     border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; margin-bottom: 10px;
@@ -89,7 +112,12 @@
   .m-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px; }
   .m-info-box { background: rgba(0,0,0,0.2); padding: 6px 8px; border-radius: 6px; }
   .m-info-box span { display: block; font-size: 9px; color: var(--muted); }
-
+  .m-avg-box {
+    margin-top: 10px; background: var(--emerald); padding: 8px 10px; border-radius: 6px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .m-avg-box span { font-size: 11px; font-weight: bold; }
+  .m-avg-box strong { font-size: 16px; }
 
   .mobile-unit {
     background: var(--paper); border: 1px solid var(--line); border-radius: 10px;
@@ -99,7 +127,6 @@
   .m-subj-row { display: flex; justify-content: space-between; font-size: 11px; padding: 3px 0; }
   .m-subj-bar { height: 4px; background: var(--surface); border-radius: 2px; width: 100%; margin-top: 2px; overflow: hidden; }
   .m-subj-fill { height: 100%; background: var(--gold); }
-
 
   #a4-render-container { position: absolute; left: -9999px; top: -9999px; width: 210mm; }
   .a4-page {
@@ -112,7 +139,6 @@
   .a4-table th, .a4-table td { border-bottom: 1px solid #e5e0d5; padding: 4px; text-align: left; }
   .a4-table td.num { text-align: right; font-weight: bold; }
   .a4-summary { display: flex; justify-content: space-between; background: #f4f1ea; padding: 10px; border-radius: 8px; margin-top: 8px; font-size: 11px; }
-
 
   @media print {
     html, body { height: auto !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; }
@@ -133,39 +159,40 @@
 </head>
 <body>
 
+<a class="skip-link" href="#main">Aller au contenu</a>
 
-<div class="wrap">
+<div class="wrap" id="main">
   <div class="topbar">
     <div class="header-info">
-      <h1 id="appTitle">📋 Générateur de Bulletin</h1>
-      <span id="appSub">UCF ZEM · Version Mobile</span>
+      <h1 data-i18n="appTitle">📋 Générateur de Bulletin</h1>
+      <span data-i18n="appSub">UCF ZEM · Version Mobile</span>
     </div>
-    <div class="action-bar">
-      <button class="btn btn-lang active" id="btnFr" onclick="setLanguage('fr')">🇫🇷 FR</button>
-      <button class="btn btn-lang" id="btnAr" onclick="setLanguage('ar')">🇲🇦 AR</button>
-      <button class="btn btn-ghost" id="btnAutoFill" onclick="autoFill()">✨ Remplir</button>
-    </div>
+    <div class="action-bar" id="lang-bar" role="group" aria-label="Langue"></div>
+    <button type="button" class="btn btn-ghost" id="btnAutoFill" data-i18n="autoFill" style="grid-column:1/-1;">✨ Remplir</button>
   </div>
-
 
   <div id="form-view">
     <div class="card">
-      <h2 class="card-title" id="sectionInfoTitle">🏫 Informations Générales</h2>
+      <h2 class="card-title" data-i18n="generalInfo">🏫 Informations Générales</h2>
       <div class="grid">
-        <div class="field"><label id="lblSchool">École</label>
-          <input class="ar" id="inputSchool" value="مدرسة ابن سينا">
+        <div class="field">
+          <label id="lblSchool" for="inputSchool" data-i18n="school">École</label>
+          <input class="ar" id="inputSchool" value="مدرسة ابن سينا" autocomplete="organization">
         </div>
-        <div class="field"><label id="lblYear">Année Scolaire</label>
+        <div class="field">
+          <label id="lblYear" for="year-select" data-i18n="schoolYear">Année Scolaire</label>
           <select id="year-select">
             <option value="2025/2026">2025 / 2026</option>
             <option value="2026/2027" selected>2026 / 2027</option>
             <option value="2027/2028">2027 / 2028</option>
           </select>
         </div>
-        <div class="field"><label id="lblStudent">Élève</label>
-          <input class="ar" id="inputStudent" value="أحمد بن محمد">
+        <div class="field">
+          <label id="lblStudent" for="inputStudent" data-i18n="student">Élève</label>
+          <input class="ar" id="inputStudent" value="أحمد بن محمد" autocomplete="name">
         </div>
-        <div class="field"><label id="lblClass">Classe</label>
+        <div class="field">
+          <label id="lblClass" for="grade-select" data-i18n="class">Classe</label>
           <select id="grade-select">
             <option value="0">1ère Année</option>
             <option value="1">2ème Année</option>
@@ -175,8 +202,12 @@
             <option value="5" selected>6ème Année</option>
           </select>
         </div>
-        <div class="field"><label id="lblNum">N° Inscription</label><input id="f-num" value="45 / 12"></div>
-        <div class="field"><label id="lblPeriod">Période</label>
+        <div class="field">
+          <label id="lblNum" for="f-num" data-i18n="regNumber">N° Inscription</label>
+          <input id="f-num" value="45 / 12">
+        </div>
+        <div class="field">
+          <label id="lblPeriod" for="semester-select" data-i18n="semester">Période</label>
           <select id="semester-select">
             <option value="0">SEMESTRE 1</option>
             <option value="1" selected>SEMESTRE 2</option>
@@ -185,497 +216,46 @@
       </div>
     </div>
 
-
     <div class="card">
-      <h2 class="card-title" id="sectionNotesTitle">📊 Notes & Coefficients</h2>
+      <h2 class="card-title" data-i18n="notesCoeff">📊 Notes & Coefficients</h2>
       <div id="units-form"></div>
     </div>
 
-
     <div class="card">
-      <h2 class="card-title" id="sectionAppreciationTitle">✍️ Appréciation</h2>
+      <h2 class="card-title" data-i18n="appreciation">✍️ Appréciation</h2>
       <div class="grid">
-        <div class="field"><label id="lblRank">Rang</label><input id="f-rank" value="2ᵉ de la classe"></div>
-        <div class="field"><label id="lblDirector">Directeur</label>
+        <div class="field">
+          <label id="lblRank" for="f-rank" data-i18n="rank">Rang</label>
+          <input id="f-rank" value="2ᵉ de la classe">
+        </div>
+        <div class="field">
+          <label id="lblDirector" for="inputDirector" data-i18n="director">Directeur</label>
           <input class="ar" id="inputDirector" value="عبد الله الناصري">
         </div>
-        <div class="field grid-full"><label id="lblRemark">Remarque</label><textarea id="f-remark" rows="2">Élève sérieux et travailleur</textarea></div>
+        <div class="field grid-full">
+          <label id="lblRemark" for="f-remark" data-i18n="remark">Remarque</label>
+          <textarea id="f-remark" rows="2">Élève sérieux et travailleur</textarea>
+        </div>
       </div>
     </div>
 
-
-    <button class="btn btn-primary" id="btnPreview" style="width:100%; padding: 14px; font-size:14px;" onclick="renderMobilePreview()">Afficher l'Aperçu Mobile →</button>
+    <button type="button" class="btn btn-primary" id="btnPreview" data-i18n="preview" style="width:100%; padding: 14px; font-size:14px;">Afficher l'Aperçu Mobile →</button>
   </div>
 
-
-  <div id="preview-mobile">
+  <div id="preview-mobile" hidden>
     <div class="action-bar" style="margin-bottom: 12px;">
-      <button class="btn btn-ghost" id="btnEdit" onclick="showForm()">← Éditer</button>
-      <button class="btn btn-ghost" id="btnPrint" onclick="window.print()">🖨️ Imprimer</button>
-      <button class="btn btn-gold" id="btnExport" onclick="exportPDF()">📄 PDF A4</button>
+      <button type="button" class="btn btn-ghost" id="btnEdit" data-i18n="edit">← Éditer</button>
+      <button type="button" class="btn btn-ghost" id="btnPrint" data-i18n="print">🖨️ Imprimer</button>
+      <button type="button" class="btn btn-gold" id="btnExport" data-i18n="exportPDF">📄 PDF A4</button>
     </div>
-    <div id="mobile-card-render"></div>
+    <div id="mobile-card-render" aria-live="polite"></div>
   </div>
 </div>
 
-
-<div id="a4-render-container">
+<div id="a4-render-container" aria-hidden="true">
   <div class="a4-page" id="a4-sheet"></div>
 </div>
 
-
-<script>
-// ============================================
-// DICTIONNAIRE DE TRADUCTION AUTO-EXTENSIBLE
-// ============================================
-const translationDict = {
-  // ===== VALEURS PAR DÉFAUT (pré-remplies) =====
-  // Écoles
-  "مدرسة ابن سينا": "École Ibn Sina",
-  "مدرسة خالد بن الوليد": "École Khalid Ibn Al-Walid",
-
-  // Élèves
-  "أحمد بن محمد": "Ahmed Ben Mohamed",
-  "كمال الدرقاوي": "Kamal Ad-Darqawi",
-
-  // Directeurs
-  "عبد الله الناصري": "Abdellah An-Naciri",
-  "محمد محي الدين": "Mohammed Mouhi Ad-Dine",
-
-
-  // ===== AJOUTEZ ICI LES NOUVELLES TRADUCTIONS =====
-  // (le système utilisera automatiquement les valeurs saisies)
-};
-
-
-// ============================================
-// DICTIONNAIRE INVERSE (Français → Arabe)
-// ============================================
-const reverseDict = {};
-Object.entries(translationDict).forEach(([ar, fr]) => {
-  reverseDict[fr.trim()] = ar;
-});
-
-
-// ============================================
-// FONCTION DE TRADUCTION INTELLIGENTE (BIDIRECTIONNELLE)
-// ============================================
-function translateValue(value, targetLang) {
-  if (!value) return value;
-  const trimmed = value.trim();
-  // Si la valeur existe dans le dictionnaire, on la traduit
-  if (targetLang === 'ar') {
-    return reverseDict[trimmed] || trimmed;
-  }
-  return translationDict[trimmed] || trimmed;
-}
-
-
-// ============================================
-// FONCTION POUR AJOUTER UNE TRADUCTION
-// ============================================
-function addTranslation(arText, frText) {
-  if (arText && frText && arText.trim() !== '' && frText.trim() !== '') {
-    translationDict[arText.trim()] = frText.trim();
-    reverseDict[frText.trim()] = arText.trim();
-  }
-}
-
-
-// ============================================
-// TRADUCTIONS DE L'INTERFACE UTILISATEUR (FIXES)
-// ============================================
-const translations = {
-  fr: {
-    appTitle: "📋 Générateur de Bulletin",
-    appSub: "UCF ZEM · Version Mobile",
-    generalInfo: "🏫 Informations Générales",
-    notesCoeff: "📊 Notes & Coefficients",
-    appreciation: "✍️ Appréciation",
-    school: "École",
-    schoolYear: "Année Scolaire",
-    student: "Élève",
-    class: "Classe",
-    regNumber: "N° Inscription",
-    semester: "Période",
-    rank: "Rang",
-    director: "Directeur",
-    remark: "Remarque",
-    coeff: "Coeff.",
-    notePlaceholder: "Note /10",
-    coeffPlaceholder: "Coeff.",
-    avgGeneral: "Moyenne Générale",
-    autoFill: "✨ Remplir",
-    preview: "Afficher l'Aperçu Mobile →",
-    edit: "← Éditer",
-    print: "🖨️ Imprimer",
-    exportPDF: "📄 PDF A4",
-    semesters: ["SEMESTRE 1", "SEMESTRE 2"],
-    grades: ["1ère Année", "2ème Année", "3ème Année", "4ème Année", "5ème Année", "6ème Année"]
-  },
-  ar: {
-    appTitle: "📋 مولد البطاقة المدرسية",
-    appSub: "UCF ZEM · نسخة الجوال",
-    generalInfo: "🏫 معلومات عامة",
-    notesCoeff: "📊 النقط والمعاملات",
-    appreciation: "✍️ التقدير",
-    school: "المؤسسة",
-    schoolYear: "السنة الدراسية",
-    student: "التلميذ",
-    class: "القسم",
-    regNumber: "رقم التسجيل",
-    semester: "الدورة",
-    rank: "الرتبة",
-    director: "المدير",
-    remark: "ملاحظة",
-    coeff: "المعامل",
-    notePlaceholder: "النقطة /10",
-    coeffPlaceholder: "المعامل",
-    avgGeneral: "المعدل العام",
-    autoFill: "✨ تعبئة تلقائية",
-    preview: "عرض المعاينة ←",
-    edit: "← تعديل",
-    print: "🖨️ طباعة",
-    exportPDF: "📄 PDF A4",
-    semesters: ["الدورة 1", "الدورة 2"],
-    grades: ["السنة 1", "السنة 2", "السنة 3", "السنة 4", "السنة 5", "السنة 6"]
-  }
-};
-
-
-// ============================================
-// DONNÉES DES UNITÉS
-// ============================================
-const UNITS = [
-  { fr:"Éducation Islamique", ar:"وحدة التربية الإسلامية", subjects:[
-    {ar:"القرآن الكريم", fr:"Coran", key:"isl1"}, {ar:"العبادات", fr:"Pratiques", key:"isl2"},
-    {ar:"الآداب الإسلامية", fr:"Morale", key:"isl3"}, {ar:"العقيدة", fr:"Dogme", key:"isl4"}
-  ]},
-  { fr:"Langue Arabe", ar:"وحدة اللغة العربية", subjects:[
-    {ar:"التعبير الشفوي", fr:"Expression Orale", key:"ar1"}, {ar:"القراءة", fr:"Lecture", key:"ar2"},
-    {ar:"التراكيب والشكل", fr:"Grammaire", key:"ar3"}, {ar:"الصرف والتحويل", fr:"Conjugaison", key:"ar4"}
-  ]},
-  { fr:"Mathématiques", ar:"وحدة الرياضيات", subjects:[
-    {ar:"الرياضيات", fr:"Mathématiques", key:"math1"}
-  ]},
-  { fr:"Langue Française", ar:"وحدة اللغة الفرنسية", subjects:[
-    {fr:"Lecture", ar:"القراءة", key:"fr1"}, {fr:"Grammaire", ar:"القواعد", key:"fr2"},
-    {fr:"Conjugaison", ar:"التصريف", key:"fr3"}, {fr:"Production Écrite", ar:"التعبير الكتابي", key:"fr4"}
-  ]}
-];
-
-
-let currentLang = 'fr';
-
-
-// ============================================
-// FONCTION DE TRADUCTION UNIVERSELLE
-// ============================================
-function applyTranslations(lang) {
-  const t = translations[lang];
-  const isRTL = lang === 'ar';
-
-
-  document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
-  document.documentElement.lang = lang;
-
-
-  document.getElementById('appTitle').textContent = t.appTitle;
-  document.getElementById('appSub').textContent = t.appSub;
-  document.getElementById('sectionInfoTitle').textContent = t.generalInfo;
-  document.getElementById('sectionNotesTitle').textContent = t.notesCoeff;
-  document.getElementById('sectionAppreciationTitle').textContent = t.appreciation;
-
-
-  document.getElementById('lblSchool').textContent = t.school;
-  document.getElementById('lblYear').textContent = t.schoolYear;
-  document.getElementById('lblStudent').textContent = t.student;
-  document.getElementById('lblClass').textContent = t.class;
-  document.getElementById('lblNum').textContent = t.regNumber;
-  document.getElementById('lblPeriod').textContent = t.semester;
-  document.getElementById('lblRank').textContent = t.rank;
-  document.getElementById('lblDirector').textContent = t.director;
-  document.getElementById('lblRemark').textContent = t.remark;
-
-
-  const gradeSelect = document.getElementById('grade-select');
-  const selectedGrade = gradeSelect.value;
-  gradeSelect.innerHTML = t.grades.map((g, i) => `<option value="${i}">${g}</option>`).join('');
-  gradeSelect.value = selectedGrade;
-
-
-  const semesterSelect = document.getElementById('semester-select');
-  const selectedSemester = semesterSelect.value;
-  semesterSelect.innerHTML = t.semesters.map((s, i) => `<option value="${i}">${s}</option>`).join('');
-  semesterSelect.value = selectedSemester;
-
-
-  document.getElementById('btnAutoFill').textContent = t.autoFill;
-  document.getElementById('btnPreview').textContent = t.preview;
-  document.getElementById('btnEdit').textContent = t.edit;
-  document.getElementById('btnPrint').textContent = t.print;
-  document.getElementById('btnExport').textContent = t.exportPDF;
-
-
-  document.getElementById('btnFr').classList.toggle('active', lang === 'fr');
-  document.getElementById('btnAr').classList.toggle('active', lang === 'ar');
-
-
-  // ===== TRADUCTION DES VALEURS DES CHAMPS (BIDIRECTIONNELLE) =====
-  const arFields = [
-    { el: document.getElementById('inputSchool'), cls: 'ar' },
-    { el: document.getElementById('inputStudent'), cls: 'ar' },
-    { el: document.getElementById('inputDirector'), cls: 'ar' }
-  ];
-
-  arFields.forEach(({ el }) => {
-    if (!el) return;
-    const translated = translateValue(el.value, lang);
-    if (translated !== el.value) el.value = translated;
-    el.classList.toggle('ar', isRTL);
-  });
-
-
-  rebuildUnitsForm(lang);
-}
-
-
-function rebuildUnitsForm(lang) {
-  const container = document.getElementById('units-form');
-  container.innerHTML = '';
-  const isAr = lang === 'ar';
-
-
-  UNITS.forEach((u) => {
-    const title = isAr ? u.ar : u.fr;
-    let html = `<div class="unit-title"><span>${title}</span></div>`;
-    u.subjects.forEach(s => {
-      const label = isAr ? (s.ar || s.fr) : (s.fr || s.ar);
-      html += `<div class="subj-item">
-        <label class="${isAr ? 'ar' : ''}">${label}</label>
-        <input type="number" step="0.25" placeholder="${translations[lang].notePlaceholder}" id="g-${s.key}">
-        <input type="number" step="0.5" value="1" placeholder="${translations[lang].coeffPlaceholder}" id="c-${s.key}">
-      </div>`;
-    });
-    container.innerHTML += html;
-  });
-}
-
-
-function setLanguage(lang) {
-  currentLang = lang;
-  applyTranslations(lang);
-}
-
-
-// ============================================
-// FONCTIONS AUTO-FILL, CALCUL, APERÇU, PDF
-// ============================================
-function autoFill() {
-  UNITS.forEach(u => u.subjects.forEach(s => {
-    document.getElementById('g-' + s.key).value = (Math.random() * 4 + 6).toFixed(2);
-    document.getElementById('c-' + s.key).value = 1;
-  }));
-}
-
-
-function calculateData() {
-  let totalWeighted = 0, totalCoeff = 0;
-  const unitsData = UNITS.map(u => {
-    let uWeighted = 0, uCoeff = 0;
-    const subjects = u.subjects.map(s => {
-      const gEl = document.getElementById('g-' + s.key);
-      const cEl = document.getElementById('c-' + s.key);
-      const grade = gEl && gEl.value !== '' ? parseFloat(gEl.value) : null;
-      const coeff = cEl && cEl.value !== '' ? parseFloat(cEl.value) : 1;
-      if (grade !== null) {
-        uWeighted += grade * coeff;
-        uCoeff += coeff;
-        totalWeighted += grade * coeff;
-        totalCoeff += coeff;
-      }
-      return { label: currentLang === 'fr' ? (s.fr || s.ar) : (s.ar || s.fr), grade, coeff };
-    });
-    const avg = uCoeff > 0 ? (uWeighted / uCoeff) : null;
-    return { name: currentLang === 'fr' ? u.fr : u.ar, subjects, avg };
-  });
-
-
-  const generalAvg = totalCoeff > 0 ? (totalWeighted / totalCoeff) : null;
-  return { unitsData, generalAvg };
-}
-
-
-function renderMobilePreview() {
-  const { unitsData, generalAvg } = calculateData();
-  const school = document.getElementById('inputSchool').value;
-  const student = document.getElementById('inputStudent').value;
-  const period = document.getElementById('semester-select');
-  const periodText = period.options[period.selectedIndex].text;
-  const klass = document.getElementById('grade-select');
-  const klassText = klass.options[klass.selectedIndex].text;
-
-
-  const t = translations[currentLang];
-
-
-  let html = `
-    <div class="mobile-card-header">
-      <div class="m-header-top">
-        <strong style="color:var(--gold);">${school}</strong>
-        <span>${periodText}</span>
-      </div>
-      <div class="m-grid">
-        <div class="m-info-box"><span>${t.student}</span><strong>${student}</strong></div>
-        <div class="m-info-box"><span>${t.class}</span><strong>${klassText}</strong></div>
-      </div>
-      <div style="margin-top:10px; background:var(--emerald); padding:8px 10px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-size:11px; font-weight:bold;">${t.avgGeneral}</span>
-        <span style="font-size:16px; font-weight:bold;">${generalAvg !== null ? generalAvg.toFixed(2) : '—'} / 10</span>
-      </div>
-    </div>
-  `;
-
-
-  unitsData.forEach(u => {
-    html += `<div class="mobile-unit">
-      <div class="m-unit-head">
-        <span>${u.name}</span>
-        <span style="color:var(--gold);">${u.avg !== null ? u.avg.toFixed(2) : '—'}</span>
-      </div>`;
-    u.subjects.forEach(s => {
-      const val = s.grade !== null ? s.grade.toFixed(2) : '—';
-      const pct = s.grade !== null ? s.grade * 10 : 0;
-      html += `<div style="margin-bottom:6px;">
-        <div class="m-subj-row">
-          <span>${s.label}</span>
-          <strong>${val}</strong>
-        </div>
-        <div class="m-subj-bar"><div class="m-subj-fill" style="width:${pct}%"></div></div>
-      </div>`;
-    });
-    html += `</div>`;
-  });
-
-
-  document.getElementById('mobile-card-render').innerHTML = html;
-  document.getElementById('form-view').style.display = 'none';
-  document.getElementById('preview-mobile').style.display = 'block';
-
-
-  renderA4Sheet(unitsData, generalAvg);
-}
-
-
-function renderA4Sheet(unitsData, generalAvg) {
-  const school = document.getElementById('inputSchool').value;
-  const student = document.getElementById('inputStudent').value;
-  const period = document.getElementById('semester-select');
-  const periodText = period.options[period.selectedIndex].text;
-  const klass = document.getElementById('grade-select');
-  const klassText = klass.options[klass.selectedIndex].text;
-  const year = document.getElementById('year-select');
-  const yearText = year.options[year.selectedIndex].text;
-  const rank = document.getElementById('f-rank').value;
-  const remark = document.getElementById('f-remark').value;
-  const director = document.getElementById('inputDirector').value;
-
-
-  const t = translations[currentLang];
-
-
-  let tableRows = '';
-  unitsData.forEach(u => {
-    tableRows += `<tr style="background:#f4f1ea; font-weight:bold;"><td colspan="3">${u.name}</td><td class="num">${u.avg !== null ? u.avg.toFixed(2) : '—'}</td></tr>`;
-    u.subjects.forEach(s => {
-      tableRows += `<tr>
-        <td style="padding-left:12px;">${s.label}</td>
-        <td>${s.coeff}</td>
-        <td>${s.grade !== null ? s.grade.toFixed(2) : '—'}</td>
-        <td class="num">${s.grade !== null ? (s.grade * s.coeff).toFixed(2) : '—'}</td>
-      </tr>`;
-    });
-  });
-
-
-  document.getElementById('a4-sheet').innerHTML = `
-    <div>
-      <div class="a4-header">
-        <div>
-          <h2 style="margin:0; font-size:16px;">${school}</h2>
-          <span style="font-size:10px;">Bulletin Scolaire</span>
-        </div>
-        <div style="text-align:right;">
-          <div style="font-weight:bold;">${yearText}</div>
-          <div style="font-size:10px;">${periodText}</div>
-        </div>
-      </div>
-      <div class="a4-grid">
-        <div><b>${t.student}:</b> ${student}</div>
-        <div><b>${t.class}:</b> ${klassText}</div>
-        <div><b>${t.rank}:</b> ${rank}</div>
-        <div><b>${t.avgGeneral}:</b> ${generalAvg !== null ? generalAvg.toFixed(2) : '—'}</div>
-      </div>
-      <table class="a4-table">
-        <thead>
-          <tr style="background:#10493f; color:#fff;">
-            <th>Matière</th><th>${t.coeff}</th><th>Note</th><th style="text-align:right;">Total</th>
-          </tr>
-        </thead>
-        <tbody>${tableRows}</tbody>
-      </table>
-    </div>
-    <div>
-      <div class="a4-summary">
-        <div><b>${t.remark}:</b> ${remark}</div>
-        <div><b>${t.avgGeneral}:</b> <span style="font-size:14px; font-weight:bold;">${generalAvg !== null ? generalAvg.toFixed(2) : '—'} / 10</span></div>
-      </div>
-      <div style="display:flex; justify-content:space-between; margin-top:15px; font-size:10px;">
-        <div>${t.director}: <b>${director}</b></div>
-        <div>Cachet de l'établissement</div>
-      </div>
-    </div>
-  `;
-}
-
-
-function showForm() {
-  document.getElementById('form-view').style.display = 'block';
-  document.getElementById('preview-mobile').style.display = 'none';
-}
-
-
-function exportPDF() {
-  const element = document.getElementById('a4-sheet');
-  const btn = document.getElementById('btnExport');
-  const originalText = btn.textContent;
-  btn.textContent = '⏳ Export...';
-  btn.disabled = true;
-
-
-  const opt = {
-    margin: 0,
-    filename: 'Bulletin.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  };
-
-
-  html2pdf().set(opt).from(element).save().then(() => {
-    btn.textContent = translations[currentLang].exportPDF;
-    btn.disabled = false;
-  }).catch(() => {
-    btn.textContent = originalText;
-    btn.disabled = false;
-  });
-}
-
-
-// ============================================
-// INITIALISATION
-// ============================================
-setLanguage('fr');
-</script>
+<script type="module" src="src/app.js"></script>
 </body>
 </html>
