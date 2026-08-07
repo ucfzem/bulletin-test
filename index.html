@@ -160,22 +160,25 @@
   @media print {
     html, body {
       height: auto !important; min-height: 0 !important; margin: 0 !important;
-      padding: 0 !important; background: #fff !important;
+      padding: 0 !important; background: #fff !important; overflow: visible !important;
     }
     body * { visibility: hidden; }
+    .skip-link, .wrap { display: none !important; }
     #a4-render-container, #a4-render-container * { visibility: visible; }
     #a4-render-container {
-      position: static !important; /* flux naturel → pagination multi-pages correcte */
+      position: absolute !important;
+      left: 0 !important; top: 0 !important;
       width: 100% !important; margin: 0 !important; padding: 0 !important;
-      left: auto !important; top: auto !important;
+      opacity: 1 !important; z-index: 9999 !important;
     }
     .a4-page {
-      width: 100% !important; height: 297mm !important; min-height: 0 !important;
-      padding: 10mm !important; margin: 0 !important; box-sizing: border-box !important;
-      page-break-after: always; break-after: page;
-      page-break-inside: avoid; break-inside: avoid;
+      width: 100% !important; max-width: 210mm !important;
+      min-height: auto !important; height: auto !important;
+      padding: 10mm !important; margin: 0 auto !important;
+      box-sizing: border-box !important;
+      page-break-after: avoid !important; break-after: avoid !important;
+      page-break-inside: avoid !important; break-inside: avoid !important;
     }
-    .a4-page:last-child { page-break-after: auto; break-after: auto; }
     .a4-page * { margin: 0 !important; padding: 0 !important; }
     .a4-page .a4-header { padding: 8px 10px !important; margin-bottom: 6px !important; }
     .a4-page .a4-grid { padding: 4px 6px !important; margin-bottom: 6px !important; }
