@@ -43,6 +43,15 @@ test('getGrade / getCoeff', () => {
   assert.equal(getCoeff({ x: '3' }, 'x'), 3);
 });
 
+test('getGrade / getCoeff : clamp hors bornes', () => {
+  assert.equal(getGrade({ x: '25' }, 'x'), 10);
+  assert.equal(getGrade({ x: '-3' }, 'x'), 0);
+  assert.equal(getGrade({ x: '8.5.2' }, 'x'), 8.5);
+  assert.equal(getGrade({ x: 'abc' }, 'x'), null);
+  assert.equal(getCoeff({ x: '99' }, 'x'), 10);
+  assert.equal(getCoeff({ x: '-1' }, 'x'), 0);
+});
+
 test('average / formatGrade / toPercent', () => {
   assert.equal(average(26, 3), 26 / 3);
   assert.equal(average(0, 0), null);

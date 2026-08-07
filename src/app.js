@@ -99,8 +99,6 @@ function switchLang(lang) {
 
 // ---------- Formulaire / Store ----------
 
-const FORM_FIELDS = ['school', 'student', 'director', 'rank', 'remark', 'count', 'teachers'];
-
 function syncFormFields() {
   const form = state().form;
   els.inputSchool && (form.school = els.inputSchool.value);
@@ -169,7 +167,6 @@ function exportPDF() {
 
   const opt = {
     margin: 0,
-    filename: 'Bulletin.pdf',
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { scale: 2, useCORS: true, logging: false },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -181,7 +178,10 @@ function exportPDF() {
   parent.style.opacity = '1';
   parent.style.zIndex = '9999';
 
-  window.html2pdf().set(opt).from(els.a4Sheet).save()
+  const studentName = (els.inputStudent && els.inputStudent.value.trim()) || 'bulletin';
+  const safeName = studentName.replace(/[^\p{L}\p{N}._-]+/gu, '_');
+
+  window.html2pdf().set(opt).from(els.a4Sheet).save(`Bulletin_${safeName}.pdf`)
     .then(() => { btn.textContent = original; })
     .catch(() => { btn.textContent = original; })
     .finally(() => {
@@ -226,7 +226,7 @@ function wireEvents() {
 
   // Champs du formulaire : sync store
   els.formView.addEventListener('input', (e) => {
-    if (FORM_FIELDS.includes(e.target.id?.slice(1)) || e.target.matches('[id^="f-"]')) {
+    if (e.target.matches('#form-view input, #form-view textarea')) {
       syncFormFields();
     }
   });

@@ -61,10 +61,16 @@ export function setLang(lang) {
 // Fonctions pures d'accès aux données (testables).
 export function getGrade(grades, key) {
   const v = grades[key];
-  return v === undefined || v === '' ? null : parseFloat(v);
+  if (v === undefined || v === '') return null;
+  const n = parseFloat(v);
+  if (Number.isNaN(n)) return null;
+  return Math.min(10, Math.max(0, n));
 }
 
 export function getCoeff(coeffs, key) {
   const v = coeffs[key];
-  return v === undefined || v === '' ? 1 : parseFloat(v);
+  if (v === undefined || v === '') return 1;
+  const n = parseFloat(v);
+  if (Number.isNaN(n)) return 1;
+  return Math.min(10, Math.max(0, n));
 }
