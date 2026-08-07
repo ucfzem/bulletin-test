@@ -127,15 +127,15 @@ export function buildA4SheetHTML(data, form, lang, translations) {
           <span style="font-size:10px;">${translations.sheetTitle}</span>
         </div>
         <div style="text-align:right;">
-          <div style="font-weight:bold;">${escapeHtml(form.year)}</div>
+          <div style="font-weight:bold;"><bdi>${escapeHtml(form.year)}</bdi></div>
           <div style="font-size:10px;">${escapeHtml(form.period)}</div>
         </div>
       </div>
-      <div class="a4-grid">
-        <div><b>${translations.student}:</b> ${escapeHtml(form.student)}</div>
-        <div><b>${translations.class}:</b> ${escapeHtml(form.klass)}</div>
-        <div><b>${translations.rank}:</b> ${escapeHtml(form.rank)}</div>
-        <div><b>${translations.avgGeneral}:</b> ${formatGrade(generalAvg)}</div>
+      <div class="a4-student-bar">
+        <div class="a4-info"><span>${translations.student}:</span> <strong>${escapeHtml(form.student)}</strong></div>
+        <div class="a4-info"><span>${translations.class}:</span> <strong>${escapeHtml(form.klass)}</strong></div>
+        <div class="a4-info"><span>${translations.rank}:</span> <strong>${escapeHtml(form.rank)}</strong></div>
+        <div class="a4-info"><span>${translations.avgGeneral}:</span> <strong dir="ltr">${formatGrade(generalAvg)} / 10</strong></div>
       </div>
       <table class="a4-table">
         <thead>
@@ -149,12 +149,12 @@ export function buildA4SheetHTML(data, form, lang, translations) {
     </div>
     <div>
       <div class="a4-summary">
-        <div><b>${translations.remark}:</b> ${escapeHtml(form.remark)}</div>
-        <div><b>${translations.avgGeneral}:</b>
-          <span style="font-size:14px; font-weight:bold;">${formatGrade(generalAvg)} / 10</span></div>
+        <div class="a4-info"><span>${translations.remark}:</span> <strong>${escapeHtml(form.remark)}</strong></div>
+        <div class="a4-info"><span>${translations.avgGeneral}:</span>
+          <strong dir="ltr" style="font-size:14px;">${formatGrade(generalAvg)} / 10</strong></div>
       </div>
-      <div style="display:flex; justify-content:space-between; margin-top:15px; font-size:10px;">
-        <div>${translations.director}: <b>${escapeHtml(form.director)}</b></div>
+      <div class="a4-footer">
+        <div class="a4-info"><span>${translations.director}:</span> <strong>${escapeHtml(form.director)}</strong></div>
         <div>${translations.stamp}</div>
       </div>
     </div>`;

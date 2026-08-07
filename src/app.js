@@ -144,6 +144,7 @@ function showPreview() {
 
   els.previewRender.innerHTML = buildMobilePreviewHTML(data, collectForm(), lang, t);
   els.a4Sheet.innerHTML = buildA4SheetHTML(data, collectForm(), lang, t);
+  els.a4Sheet.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
 
   els.formView.hidden = true;
   els.preview.hidden = false;
