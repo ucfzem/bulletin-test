@@ -160,3 +160,21 @@ bulletin-test/
 
 ### Validation
 - `npm test` → 8/8 OK ; `npm run test:e2e` → TOUT OK.
+
+---
+
+## Session (suite) : bug bidi restait visible → fix étendu à l'aperçu mobile
+
+### Constat
+- Le correctif `<bdi>`/`dir="ltr"` n'avait corrigé que la **feuille A4** ; l'**aperçu
+  mobile** (la carte encadrée en rouge) affichait encore l'année inversée et la
+  moyenne ` / 10` mal placée en mode arabe.
+
+### Correctif — commit `b8f14b8`
+- `src/render.js` (`buildMobilePreviewHTML`) : année dans `<bdi>`, moyenne dans
+  `<strong dir="ltr">`, comme l'A4.
+
+### Vérification automatique (Playwright, géométrie de rendu)
+- Range API : la position de « 2026 » est à gauche de « 2027 » en mode AR
+  (mobile : x=795 < x=871 ; A4 : x=49.8 < x=93.8) → ordre LTR confirmé.
+- `npm test` → 8/8 OK ; `npm run test:e2e` → TOUT OK.
