@@ -243,3 +243,34 @@ bulletin-test/
   `npm run test:e2e` → TOUT OK (16 assertions).
 - Vérification ciblée : `getGrade('25')→10`, `getGrade('-3')→0`,
   `getGrade('8.5.2')→8.5`, `getCoeff('99')→10`, `getCoeff('-1')→0`.
+
+---
+
+## Session (suite) : impression → 3 pages vides (commit `e1efd05`)
+
+### Diagnostic (Playwright + `page.pdf`)
+- Le bouton 🖨️ Imprimer sortait **3 pages toutes blanches**.
+- Causes combinées dans le `@media print` :
+  1. **`height: 297mm` fixe** sur `.a4-page` + `page-break-after: always`
+     → le navigateur calculait un léger dépassement et ajoutait des pages
+     vides en cascade.
+  2. **`opacity: 0`** du conteneur `#a4-render-container` jamais surchargé en
+     print (seul `visibility` l'était) → contenu invisible.
+  3. `visibility: hidden` sur `body *` **préserve la hauteur** de l'UI mobile
+     → pages blanches poussées après la feuille A4.
+
+### Correctifs (`index.html`)
+- `#a4-render-container` : `position: absolute`, `opacity: 1 !important`,
+  `z-index: 9999`.
+- `.a4-page` : `height: auto` (fini le 297mm forcé), `max-width: 210mm`,
+  `page-break-after: avoid` / `break-after: avoid` (pas de page vide après),
+  `page-break-inside: avoid`.
+- `.skip-link, .wrap { display: none !important; }` → retire l'UI mobile du
+  flux d'impression (le simple `visibility` laissait sa hauteur).
+
+### Vérification
+- `page.pdf({ format:'A4', printBackground:true })` → **`/Count 1`** (1 seule
+  page), pixels non-blancs 23 553 → contenu visible, PDF 17 Ko.
+- `npm test` → 9/9 OK ; `npm run test:e2e` → TOUT OK.
+- Note : le comptage `/Type /Page` matche aussi `/Type /Pages` (catalogue) —
+  toujours vérifier via `/Count`.
