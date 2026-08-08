@@ -82,9 +82,12 @@
   .field { display: flex; flex-direction: column; gap: 4px; }
   .field label { font-size: 10px; color: var(--muted); font-weight: 600; }
   .field input, .field select, .field textarea {
-    border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px;
+    border: 1px solid var(--line); border-radius: 8px; padding: 8px;
     font-size: 13px; font-family: 'Inter', sans-serif; background: var(--surface); color: var(--ink); width: 100%;
   }
+  .field .dual + input { margin-top: 4px; }
+  .field input + input { margin-top: 4px; }
+  .field .dual-lbl { font-size: 9px; color: var(--muted); font-weight: 500; letter-spacing: 0.4px; text-transform: uppercase; }
   .field input.ar { font-family: 'Tajawal', sans-serif; direction: rtl; }
   .field textarea.ar { font-family: 'Tajawal', sans-serif; direction: rtl; }
   .field select option { background: var(--surface); color: var(--ink); }
@@ -208,8 +211,9 @@
       <h2 class="card-title" data-i18n="generalInfo">🏫 Informations Générales</h2>
       <div class="grid">
         <div class="field">
-          <label id="lblSchool" for="inputSchool" data-i18n="school">École</label>
-          <input class="ar" id="inputSchool" value="مدرسة ابن سينا" autocomplete="organization">
+          <label id="lblSchool" for="inputSchoolFr" data-i18n="school">École</label>
+          <input id="inputSchoolFr" value="École Ibn Sina" placeholder="Français" autocomplete="organization">
+          <input class="ar" id="inputSchoolAr" dir="rtl" value="مدرسة ابن سينا" placeholder="العربية" autocomplete="organization">
         </div>
         <div class="field">
           <label id="lblYear" for="year-select" data-i18n="schoolYear">Année Scolaire</label>
@@ -220,8 +224,9 @@
           </select>
         </div>
         <div class="field">
-          <label id="lblStudent" for="inputStudent" data-i18n="student">Élève</label>
-          <input class="ar" id="inputStudent" value="أحمد بن محمد" autocomplete="name">
+          <label id="lblStudent" for="inputStudentFr" data-i18n="student">Élève</label>
+          <input id="inputStudentFr" value="Ahmed Ben Mohamed" placeholder="Français" autocomplete="name">
+          <input class="ar" id="inputStudentAr" dir="rtl" value="أحمد بن محمد" placeholder="العربية" autocomplete="name">
         </div>
         <div class="field">
           <label id="lblClass" for="grade-select" data-i18n="class">Classe</label>
@@ -243,8 +248,9 @@
           <input type="number" id="inputCount" value="22" min="1" inputmode="numeric">
         </div>
         <div class="field">
-          <label id="lblTeachers" for="inputTeachers" data-i18n="teachers">Professeurs</label>
-          <input class="ar" id="inputTeachers" value="المرابط · الفاسي">
+          <label id="lblTeachers" for="inputTeachersFr" data-i18n="teachers">Professeurs</label>
+          <input id="inputTeachersFr" value="Al-Morabit · Al-Fassi" placeholder="Français">
+          <input class="ar" id="inputTeachersAr" dir="rtl" value="المرابط · الفاسي" placeholder="العربية">
         </div>
         <div class="field">
           <label id="lblPeriod" for="semester-select" data-i18n="semester">Période</label>
@@ -270,8 +276,9 @@
           <input id="f-rank" value="2ᵉ de la classe">
         </div>
         <div class="field">
-          <label id="lblDirector" for="inputDirector" data-i18n="director">Directeur</label>
-          <input class="ar" id="inputDirector" value="عبد الله الناصري">
+          <label id="lblDirector" for="inputDirectorFr" data-i18n="director">Directeur</label>
+          <input id="inputDirectorFr" value="Abdellah An-Naciri" placeholder="Français">
+          <input class="ar" id="inputDirectorAr" dir="rtl" value="عبد الله الناصري" placeholder="العربية">
         </div>
         <div class="field grid-full">
           <label id="lblRemark" for="f-remark" data-i18n="remark">Remarque</label>

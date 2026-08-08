@@ -41,9 +41,10 @@ page.on('pageerror', (e) => errors.push(e.message));
 await page.goto(baseURL, { waitUntil: 'networkidle' });
 
 // Vérifie l'état FR initial.
-assert((await page.inputValue('#inputSchool')) === 'École Ibn Sina', 'FR: école traduite → École Ibn Sina');
+assert((await page.inputValue('#inputSchoolFr')) === 'École Ibn Sina', 'FR: école en français → École Ibn Sina');
+assert((await page.inputValue('#inputSchoolAr')) === 'مدرسة ابن سينا', 'FR: école en arabe dispo → مدرسة ابن سينا');
 assert((await page.inputValue('#f-rank')) === '2ᵉ de la classe', 'FR: rang en français');
-assert((await page.inputValue('#inputTeachers')) === 'Al-Morabit · Al-Fassi', 'FR: professeurs traduits → Al-Morabit · Al-Fassi');
+assert((await page.inputValue('#inputTeachersFr')) === 'Al-Morabit · Al-Fassi', 'FR: professeurs en français → Al-Morabit · Al-Fassi');
 
 // Clique le bouton arabe.
 await page.click('[data-lang="ar"]');
@@ -51,7 +52,7 @@ await page.waitForTimeout(200);
 
 assert((await page.inputValue('#f-rank')) === 'الثاني في القسم', 'AR: rang traduit → الثاني في القسم');
 assert((await page.inputValue('#f-remark')) === 'تلميذ جاد ومجتهد', 'AR: remarque traduite → تلميذ جاد ومجتهد');
-assert((await page.inputValue('#inputTeachers')) === 'المرابط · الفاسي', 'AR: professeurs → المرابط · الفاسي');
+assert((await page.inputValue('#inputTeachersAr')) === 'المرابط · الفاسي', 'AR: professeurs en arabe → المرابط · الفاسي');
 assert((await page.$eval('html', (el) => el.getAttribute('dir'))) === 'rtl', 'AR: dir=rtl');
 
 // Retour FR, tout revient.

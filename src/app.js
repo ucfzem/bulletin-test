@@ -35,14 +35,18 @@ const els = {
   gradeSelect: $('grade-select'),
   semesterSelect: $('semester-select'),
   yearSelect: $('year-select'),
-  inputSchool: $('inputSchool'),
-  inputStudent: $('inputStudent'),
-  inputDirector: $('inputDirector'),
+  inputSchoolFr: $('inputSchoolFr'),
+  inputSchoolAr: $('inputSchoolAr'),
+  inputStudentFr: $('inputStudentFr'),
+  inputStudentAr: $('inputStudentAr'),
+  inputDirectorFr: $('inputDirectorFr'),
+  inputDirectorAr: $('inputDirectorAr'),
   inputRank: $('f-rank'),
   inputRemark: $('f-remark'),
   inputNum: $('f-num'),
   inputCount: $('inputCount'),
-  inputTeachers: $('inputTeachers')
+  inputTeachersFr: $('inputTeachersFr'),
+  inputTeachersAr: $('inputTeachersAr')
 };
 
 let lastTrigger = null;
@@ -68,8 +72,8 @@ function applyLanguage(lang) {
   const semSel = els.semesterSelect;
   semSel.innerHTML = buildSelectOptions(t.semesters, semSel.value);
 
-  // Traduction des valeurs saisies (bidirectionnelle)
-  [els.inputSchool, els.inputStudent, els.inputDirector, els.inputRank, els.inputRemark, els.inputTeachers].forEach((el) => {
+  // Traduction des valeurs saisies via dictionnaire (Rang / Remarque)
+  [els.inputRank, els.inputRemark].forEach((el) => {
     if (!el) return;
     const translated = translateValue(el.value, lang);
     if (translated !== el.value) el.value = translated;
@@ -101,19 +105,39 @@ function switchLang(lang) {
 
 function syncFormFields() {
   const form = state().form;
-  els.inputSchool && (form.school = els.inputSchool.value);
-  els.inputStudent && (form.student = els.inputStudent.value);
-  els.inputDirector && (form.director = els.inputDirector.value);
+  els.inputSchoolFr && (form.school.fr = els.inputSchoolFr.value);
+  els.inputSchoolAr && (form.school.ar = els.inputSchoolAr.value);
+  els.inputStudentFr && (form.student.fr = els.inputStudentFr.value);
+  els.inputStudentAr && (form.student.ar = els.inputStudentAr.value);
+  els.inputDirectorFr && (form.director.fr = els.inputDirectorFr.value);
+  els.inputDirectorAr && (form.director.ar = els.inputDirectorAr.value);
+  els.inputTeachersFr && (form.teachers.fr = els.inputTeachersFr.value);
+  els.inputTeachersAr && (form.teachers.ar = els.inputTeachersAr.value);
   els.inputRank && (form.rank = els.inputRank.value);
   els.inputRemark && (form.remark = els.inputRemark.value);
   els.inputNum && (form.regNum = els.inputNum.value);
   els.inputCount && (form.count = els.inputCount.value);
-  els.inputTeachers && (form.teachers = els.inputTeachers.value);
+}
+
+function localize(value, lang) {
+  if (value && typeof value === 'object') return lang === 'ar' ? value.ar : value.fr;
+  return value;
 }
 
 function collectForm() {
   syncFormFields();
-  const form = { ...state().form };
+  const { lang } = state();
+  const f = state().form;
+  const form = {
+    school: localize(f.school, lang),
+    student: localize(f.student, lang),
+    director: localize(f.director, lang),
+    teachers: localize(f.teachers, lang),
+    rank: f.rank,
+    remark: f.remark,
+    regNum: f.regNum,
+    count: f.count
+  };
   form.year = els.yearSelect.options[els.yearSelect.selectedIndex].text;
   form.period = els.semesterSelect.options[els.semesterSelect.selectedIndex].text;
   form.klass = els.gradeSelect.options[els.gradeSelect.selectedIndex].text;
@@ -178,7 +202,7 @@ function exportPDF() {
   parent.style.opacity = '1';
   parent.style.zIndex = '9999';
 
-  const studentName = (els.inputStudent && els.inputStudent.value.trim()) || 'bulletin';
+  const studentName = (els.inputStudentFr && els.inputStudentFr.value.trim()) || 'bulletin';
   const safeName = studentName.replace(/[^\p{L}\p{N}._-]+/gu, '_');
 
   window.html2pdf().set(opt).from(els.a4Sheet).save(`Bulletin_${safeName}.pdf`)

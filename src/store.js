@@ -42,14 +42,14 @@ export const store = createStore({
   grades: {},   // subjectKey → "8.50"
   coeffs: {},   // subjectKey → "1"
   form: {
-    school: '',
-    student: '',
-    director: '',
+    school: { fr: '', ar: '' },
+    student: { fr: '', ar: '' },
+    director: { fr: '', ar: '' },
     rank: '',
     remark: '',
     regNum: '',
     count: '',
-    teachers: ''
+    teachers: { fr: '', ar: '' }
   }
 });
 
