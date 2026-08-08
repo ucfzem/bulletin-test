@@ -274,3 +274,39 @@ bulletin-test/
 - `npm test` → 9/9 OK ; `npm run test:e2e` → TOUT OK.
 - Note : le comptage `/Type /Page` matche aussi `/Type /Pages` (catalogue) —
   toujours vérifier via `/Count`.
+
+---
+
+## Session (suite) : double saisie FR/AR (commit `9ada480`)
+
+### Décision
+Un dictionnaire seul ne suffit pas pour les **noms propres** (élèves, écoles,
+professeurs, directeurs : imprévisibles, uniques). La traduction via API
+(MyMemory) a été écartée : quota gratuit limité, nécessite internet, traduit
+mal les noms propres. Choix retenu : **double saisie FR/AR** sur les champs
+à noms propres, 100 % hors-ligne et fiable.
+
+### Implémentation (app modulaire conservée)
+- **`index.html`** : École, Élève, Professeurs, Directeur → chacun dispose de
+  **deux inputs** (`…Fr` et `…Ar`, le second `dir="rtl"` + classe `ar`).
+  Rang et Remarque restent des champs uniques traduits par le dictionnaire
+  (phrases prévisibles).
+- **`src/store.js`** : `form.school/student/director/teachers` deviennent des
+  objets `{ fr, ar }`.
+- **`src/app.js`** :
+  - `syncFormFields()` lit les deux inputs dans l'objet ;
+  - nouvelle fonction pure `localize(value, lang)` ;
+  - `collectForm()` retourne un formulaire aplati **localisé** selon la langue
+    active (utilisé par l'aperçu mobile et la feuille A4) ;
+  - `applyLanguage()` ne traduit plus que Rang/Remarque via le dictionnaire ;
+  - nom du PDF : `Bulletin_{élève en FR}.pdf`.
+- **`test/e2e.mjs`** : adapté aux nouveaux ids (`inputSchoolFr/Ar`,
+  `inputTeachersFr/Ar`) + assertions vérifiant que les deux versions cohabitent.
+
+### Validation
+- `npm test` → 9/9 OK ; `npm run test:e2e` → TOUT OK (17 assertions).
+- Probe Playwright : en AR l'aperçu et l'A4 affichent
+  `مدرسة ابن سينا` + `أحمد بن محمد` ; en FR `École Ibn Sina` +
+  `Ahmed Ben Mohamed`. Bascule sans perte ni écrasement des saisies.
+- Un message « Solution MyMemory » reçu a été **ignoré/reporté** (il aurait
+  écrasé l'app modulaire et perdu les fixes précédents).
